@@ -25,13 +25,14 @@ npm run dev
 
 ## Nutrition formulas
 
-Measurements are stored in centimeters and kilograms; imperial values are converted before they are saved in the profile.
+All constants, with source citations, live in `src/utils/nutritionConstants.js`; the pure calculation functions are in `src/utils/calorieCalculator.js`. Measurements are stored in centimeters and kilograms (1 lb = 0.453592 kg, 1 in = 2.54 cm) and shown in the user's chosen units.
 
-- Mifflin–St Jeor BMR: `10 × weightKg + 6.25 × heightCm − 5 × age + sex adjustment`. The adjustment is `+5` for male, `−161` for female, and the average (`−78`) for other.
-- TDEE is BMR multiplied by the selected activity factor: 1.2, 1.375, 1.55, 1.725, or 1.9.
-- Weight-loss adjustments are −300/−400/−500 kcal for slow/moderate/fast pace. Gain adjustments are +250/+375/+500 kcal. Maintenance has no adjustment.
-- The final calorie target is floored at 1,200 kcal for female and 1,500 kcal for male profiles. The app uses the 1,200 kcal floor for “other” profiles and explicitly flags when a floor changes the requested target.
-- Macro calorie splits are lose 30/40/30, maintain 25/50/25, and gain 25/55/20 for protein/carbohydrate/fat. Grams use 4 kcal/g for protein and carbs and 9 kcal/g for fat.
+- BMR defaults to Mifflin–St Jeor (1990): `10 × kg + 6.25 × cm − 5 × age + 5` (male) or `− 161` (female). Revised Harris–Benedict (Roza & Shizgal, 1984) is optional, and Katch–McArdle (`370 + 21.6 × lean mass kg`) is available only when body-fat % is entered. People who choose “Other” pick which equation (female or male) to use.
+- TDEE is BMR × activity factor: 1.2, 1.375, 1.55, 1.725, or 1.9.
+- Goal adjustments are ±250 kcal (mild, ~0.25 kg/week) or ±500 kcal (standard, ~0.5 kg/week). A deficit is capped at 25% of TDEE. The result is rounded to the nearest 10 kcal.
+- Targets are never below 1,200 kcal (female equation) or 1,500 kcal (male equation); the app flags the clamp and recommends a doctor or registered dietitian.
+- Protein is 0.8 g/kg for sedentary profiles and 1.6 g/kg for active ones (2.0 g/kg when losing weight), capped at 35% of calories. Fat is 30% of calories and carbohydrates are the remainder (4/4/9 kcal per gram).
+- Inputs are validated: age 15–80, height 100–250 cm, weight 30–300 kg, body fat 3–60%. BMI uses WHO categories and is presented as a screening tool only.
 
 These estimates are informational, not medical advice.
 
