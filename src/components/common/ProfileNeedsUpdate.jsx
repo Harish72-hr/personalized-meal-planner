@@ -1,6 +1,7 @@
 import { ArrowRight, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext.jsx";
+import { ROUTES } from "../../utils/appFlow.js";
 
 // Shown instead of the app when a saved profile no longer passes validation
 // (for example, a profile saved before the input ranges were tightened).
@@ -14,7 +15,7 @@ export default function ProfileNeedsUpdate({ errors }) {
         <h1 id="profile-update-title">Your profile needs a quick update</h1>
         <p>We improved how daily targets are calculated. A few details need checking before we can show your plan:</p>
         <ul>{Object.entries(errors).map(([field, message]) => <li key={field}>{message}</li>)}</ul>
-        <button className="button button-primary" type="button" onClick={() => { beginWizard(profile); navigate("/wizard"); }}>
+        <button className="button button-primary" type="button" onClick={() => { beginWizard(profile); navigate(ROUTES.onboarding); }}>
           Update my profile <ArrowRight size={16} />
         </button>
       </section>

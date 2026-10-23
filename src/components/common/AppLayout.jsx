@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { usePlan } from "../../context/PlanContext.jsx";
 import { useProfile } from "../../context/ProfileContext.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";
+import { ROUTES } from "../../utils/appFlow.js";
 
 export default function AppLayout() {
   const { profile, beginWizard, darkMode } = useProfile();
@@ -25,7 +26,7 @@ export default function AppLayout() {
         </nav>
         <div className="sidebar-bottom">
           <div className="sidebar-tip"><span className="tip-spark">✳</span><strong>Small steps,<br />better days.</strong><p>A plan that fits your life is one you can stick with.</p></div>
-          <button className="profile-link" onClick={() => { beginWizard(profile); navigate("/wizard"); }}>
+          <button className="profile-link" onClick={() => { beginWizard(profile); navigate(ROUTES.onboarding); }}>
             <span className="avatar">{profile.name?.slice(0, 1).toUpperCase() || "Y"}</span>
             <span><strong>{profile.name}</strong><small>Edit your profile</small></span><UserRound size={16} />
           </button>

@@ -1,39 +1,48 @@
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/common/AppLayout.jsx";
-import WizardPage from "./components/wizard/WizardPage.jsx";
+import ProfileNeedsUpdate from "./components/common/ProfileNeedsUpdate.jsx";
 import { PlanProvider } from "./context/PlanContext.jsx";
 import { ProfileProvider, useProfile } from "./context/ProfileContext.jsx";
+import { DiaryProvider } from "./context/DiaryContext.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import FavoritesPage from "./pages/FavoritesPage.jsx";
 import GroceryPage from "./pages/GroceryPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
+import OnboardingPage from "./pages/OnboardingPage.jsx";
+import PreferencesPage from "./pages/PreferencesPage.jsx";
+import ResultsPage from "./pages/ResultsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
-import { DiaryProvider } from "./context/DiaryContext.jsx";
-import ProfileNeedsUpdate from "./components/common/ProfileNeedsUpdate.jsx";
-import { normalizeProfile, validateProfile } from "./utils/calorieCalculator.js";
+import { ROUTES, guardProfileRoute } from "./utils/appFlow.js";
 
 const DiaryPage = lazy(() => import("./pages/DiaryPage.jsx"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage.jsx"));
 
-function ProtectedLayout() {
+// Every screen after onboarding needs a valid saved profile; without one the user is sent to onboarding.
+function RequireProfile() {
   const { profile } = useProfile();
-  if (!profile) return <Navigate to="/wizard" replace />;
-  const errors = validateProfile(normalizeProfile(profile));
-  return Object.keys(errors).length ? <ProfileNeedsUpdate errors={errors} /> : <AppLayout />;
+  const guard = guardProfileRoute(profile);
+  if (guard.redirect) return <Navigate to={guard.redirect} replace />;
+  if (guard.needsUpdate) return <ProfileNeedsUpdate errors={guard.needsUpdate} />;
+  return <Outlet />;
 }
 
 export default function App() {
   return <ProfileProvider><PlanProvider><DiaryProvider><Routes>
     <Route path="/" element={<HomePage />} />
-    <Route path="/wizard" element={<WizardPage />} />
-    <Route element={<ProtectedLayout />}>
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/grocery" element={<GroceryPage />} />
-      <Route path="/favorites" element={<FavoritesPage />} />
-      <Route path="/diary" element={<Suspense fallback={<div className="panel diary-route-loading" role="status">Loading your diary…</div>}><DiaryPage /></Suspense>} />
-      <Route path="/reports" element={<Suspense fallback={<div className="panel diary-route-loading" role="status">Loading your reports…</div>}><ReportsPage /></Suspense>} />
-      <Route path="/settings" element={<SettingsPage />} />
+    <Route path={ROUTES.onboarding} element={<OnboardingPage />} />
+    <Route path="/wizard" element={<Navigate to={ROUTES.onboarding} replace />} />
+    <Route element={<RequireProfile />}>
+      <Route path={ROUTES.results} element={<ResultsPage />} />
+      <Route path={ROUTES.preferences} element={<PreferencesPage />} />
+      <Route element={<AppLayout />}>
+        <Route path={ROUTES.dashboard} element={<DashboardPage />} />
+        <Route path="/grocery" element={<GroceryPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/diary" element={<Suspense fallback={<div className="panel diary-route-loading" role="status">Loading your diary…</div>}><DiaryPage /></Suspense>} />
+        <Route path="/reports" element={<Suspense fallback={<div className="panel diary-route-loading" role="status">Loading your reports…</div>}><ReportsPage /></Suspense>} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
     </Route>
     <Route path="*" element={<HomePage />} />
   </Routes></DiaryProvider></PlanProvider></ProfileProvider>;

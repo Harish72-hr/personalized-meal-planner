@@ -10,7 +10,8 @@
     "dev:all": "npm run dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test",
+    "test:e2e": "node --test tests/e2e/flow.e2e.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

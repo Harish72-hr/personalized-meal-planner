@@ -23,5 +23,5 @@ export async function fetchPlanRecipes(profile, nutrition, { online = true, forc
 export async function createRecipePlan(profile, nutrition, favorites = [], options = {}) {
   const recipeResults = await fetchPlanRecipes(profile, nutrition, options);
   const plan = generateWeeklyPlan(profile, nutrition, favorites, Math.random, recipeResults.candidatePool);
-  return { ...plan, ...recipeResults, offlineRecipes: recipeResults.offline };
+  return { ...plan, ...recipeResults, offlineRecipes: recipeResults.offline, targetCalories: nutrition.calories };
 }

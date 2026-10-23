@@ -1,14 +1,15 @@
 import { lazy, Suspense } from "react";
 import { AlertTriangle, Info } from "lucide-react";
-import { ACTIVITY_LEVELS, BMR_FORMULAS, PACE_OPTIONS, kgToLb, leanBodyMass, roundTo } from "../../utils/calorieCalculator.js";
+import { ACTIVITY_LEVELS, BMR_FORMULAS, PACE_OPTIONS, kgToLb, leanBodyMass } from "../../utils/calorieCalculator.js";
 import {
   CALORIE_ROUNDING, FAT_FRACTION, HARRIS_BENEDICT_REVISED, KATCH_MCARDLE, MAX_DEFICIT_FRACTION, MIFFLIN_ST_JEOR, PROTEIN_MAX_FRACTION,
 } from "../../utils/nutritionConstants.js";
 
+import CalorieComparisonChart from "../charts/CalorieComparisonChart.jsx";
+
 const MacroDonut = lazy(() => import("../charts/MacroDonut.jsx"));
 
 const kcal = (value) => Math.round(value).toLocaleString();
-const approxKcal = (value) => roundTo(value, CALORIE_ROUNDING).toLocaleString();
 const signed = (value) => `${value < 0 ? "−" : "+"} ${Math.abs(value)}`;
 const one = (value) => (Math.round(Number(value) * 10) / 10).toLocaleString();
 
@@ -62,11 +63,7 @@ export default function ResultsCard({ profile, nutrition }) {
         <strong>Does this look right?</strong> Your target is more than 1,000 kcal above your BMR. People often overestimate activity, so double-check your activity level.
       </p></div>}
 
-      <dl className="results-stats">
-        <div><dt>BMR <span>at rest</span></dt><dd>≈ {approxKcal(nutrition.bmr)} <small>kcal</small></dd></div>
-        <div><dt>TDEE <span>with activity</span></dt><dd>≈ {approxKcal(nutrition.tdee)} <small>kcal</small></dd></div>
-        <div><dt>Goal <span>adjustment</span></dt><dd>{nutrition.goalAdjustment === 0 ? "0" : signed(nutrition.goalAdjustment)} <small>kcal</small></dd></div>
-      </dl>
+      <CalorieComparisonChart nutrition={nutrition} />
 
       <div className="results-grid">
         <section className="results-panel" aria-labelledby="macros-title">

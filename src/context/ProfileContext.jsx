@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage.js";
 import { normalizeProfile } from "../utils/calorieCalculator.js";
+import { hasMealPreferences } from "../utils/appFlow.js";
 
 export const createEmptyDraft = () => ({
   name: "",
@@ -25,6 +26,8 @@ export const createEmptyDraft = () => ({
   dislikedFoods: [],
   dislikeInput: "",
   healthConditions: [],
+  // Food preferences are collected after onboarding, on the meal preferences screen.
+  preferencesSet: false,
 });
 
 const ProfileContext = createContext(null);
@@ -54,8 +57,8 @@ function useSystemDark() {
 export function ProfileProvider({ children }) {
   const [profile, setProfile] = useLocalStorage("gather-v2-profile", null);
   const [draft, setDraft] = useLocalStorage("gather-v3-wizard-draft", createEmptyDraft());
-  // The step order changed in v4 (calculator steps first), so older saved steps are not reused.
-  const [step, setStep] = useLocalStorage("gather-v4-wizard-step", 0);
+  // Onboarding became four calculator steps in v5, so older saved step numbers are not reused.
+  const [step, setStep] = useLocalStorage("gather-v5-onboarding-step", 0);
   const [theme, setTheme] = useLocalStorage("gather-v3-theme", legacyTheme);
   const systemDark = useSystemDark();
   const darkMode = theme === "dark" || (theme === "system" && systemDark);
@@ -76,7 +79,7 @@ export function ProfileProvider({ children }) {
     setDarkMode: (dark) => setTheme(dark ? "dark" : "light"),
     beginWizard(existingProfile = null) {
       if (existingProfile) {
-        setDraft({ ...createEmptyDraft(), ...normalizeProfile(existingProfile), activityLevel: "" });
+        setDraft({ ...createEmptyDraft(), ...normalizeProfile(existingProfile), preferencesSet: hasMealPreferences(existingProfile) });
         setStep(0);
       }
     },

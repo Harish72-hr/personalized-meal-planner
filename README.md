@@ -23,6 +23,16 @@ npm install react-router-dom recharts lucide-react
 npm run dev
 ```
 
+## App flow
+
+1. **Onboarding** (`/onboarding`, 4 steps: personal info → body → activity → goal). New users always start here.
+2. **Results** (`/results`): BMR, TDEE and daily goal chart, macro split, and a one-line explanation of the goal. "Go to Dashboard" continues.
+3. **Dashboard** (`/dashboard`): today's goal, calories eaten, remaining, and progress. "Edit profile" reopens onboarding and recalculates the goal. Food preferences (`/preferences`) build the weekly meal plan.
+
+`/` sends users without a saved profile to onboarding and returning users to the dashboard. Every screen after onboarding redirects to onboarding when no profile is saved. Routing decisions live in `src/utils/appFlow.js`.
+
+`npm test` runs the unit tests. `npm run test:e2e` runs the flow in headless Chrome or Edge (set `CHROME_PATH` if neither is in a standard location).
+
 ## Nutrition formulas
 
 All constants, with source citations, live in `src/utils/nutritionConstants.js`; the pure calculation functions are in `src/utils/calorieCalculator.js`. Measurements are stored in centimeters and kilograms (1 lb = 0.453592 kg, 1 in = 2.54 cm) and shown in the user's chosen units.
