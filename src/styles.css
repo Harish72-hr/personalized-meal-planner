@@ -631,3 +631,10 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
   .food-selection { grid-template-columns: 1fr auto; }
   .custom-food-form .field-row { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+.profile-update { display: grid; min-height: 100vh; place-items: center; padding: 24px 16px; color: var(--text); background: var(--wash); }
+.profile-update-card { display: grid; width: min(100%, 480px); gap: 14px; justify-items: start; padding: 28px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+.profile-update-card h1 { margin: 0; font: 700 22px/1.3 Manrope, sans-serif; }
+.profile-update-card p, .profile-update-card li { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.profile-update-card ul { display: grid; gap: 6px; margin: 0; padding-left: 20px; }
+.profile-update-card .button { min-height: 44px; font-size: 15px; }

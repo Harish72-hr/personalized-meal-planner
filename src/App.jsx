@@ -10,13 +10,17 @@ import GroceryPage from "./pages/GroceryPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import { DiaryProvider } from "./context/DiaryContext.jsx";
+import ProfileNeedsUpdate from "./components/common/ProfileNeedsUpdate.jsx";
+import { normalizeProfile, validateProfile } from "./utils/calorieCalculator.js";
 
 const DiaryPage = lazy(() => import("./pages/DiaryPage.jsx"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage.jsx"));
 
 function ProtectedLayout() {
   const { profile } = useProfile();
-  return profile ? <AppLayout /> : <Navigate to="/wizard" replace />;
+  if (!profile) return <Navigate to="/wizard" replace />;
+  const errors = validateProfile(normalizeProfile(profile));
+  return Object.keys(errors).length ? <ProfileNeedsUpdate errors={errors} /> : <AppLayout />;
 }
 
 export default function App() {
