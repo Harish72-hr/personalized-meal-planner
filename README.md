@@ -23,8 +23,20 @@ npm install react-router-dom recharts lucide-react
 npm run dev
 ```
 
+## Accounts and MongoDB Atlas
+
+Put the Atlas connection string in `.env` (never in client code):
+
+```
+MONGODB_URI=mongodb+srv://<db_username>:<db_password>@cluster0.n6zmea2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_DB=gather
+```
+
+In Atlas, the database user must exist (Database Access) and your IP must be allowed (Network Access). URL-encode special characters in the password. If the server logs `querySrv ECONNREFUSED`, Node is using a local DNS resolver that refuses SRV lookups; set `DNS_SERVERS=1.1.1.1,8.8.8.8`. Without `MONGODB_URI` the recipe proxy still runs, but login and sign-up answer 503. `AUTH_STORE=memory` keeps accounts in memory for local testing, and the e2e tests use that too.
+
 ## App flow
 
+0. **Log in** (`/login`): log in or create an account. Every other screen redirects here when nobody is signed in, then returns to the requested page. Accounts are stored in MongoDB Atlas by the Express server (`server/auth.js`, `server/authStore.js`): passwords are salted scrypt hashes, and the session is an httpOnly cookie whose token is stored only as a SHA-256 hash, with expired sessions removed by a TTL index. "Keep me signed in" keeps the session for 30 days; otherwise the cookie ends with the browser session (at most 24 hours). Each account's profile, plan, diary and favorites are still stored in the browser under that account's own keys, and the first account signed up in a browser keeps any data saved before accounts existed.
 1. **Onboarding** (`/onboarding`, 4 steps: personal info → body → activity → goal). New users always start here.
 2. **Results** (`/results`): BMR, TDEE and daily goal chart, macro split, and a one-line explanation of the goal. "Go to Dashboard" continues.
 3. **Dashboard** (`/dashboard`): today's goal, calories eaten, remaining, and progress. "Edit profile" reopens onboarding and recalculates the goal. Food preferences (`/preferences`) build the weekly meal plan.
